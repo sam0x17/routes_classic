@@ -193,8 +193,8 @@ local function processMapChildrenRecursive(parent)
 	end
 end
 
-local COSMIC_MAP_ID = 946
-processMapChildrenRecursive(COSMIC_MAP_ID)
+local WORLD_MAP_ID = 947
+processMapChildrenRecursive(WORLD_MAP_ID)
 
 ------------------------------------------------------------------------------------------------------
 -- Core Routes functions
