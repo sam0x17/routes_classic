@@ -1,0 +1,12 @@
+tag 6f01a5a18a77f5c6d13f012786f286853b955850 v1.6.3
+Author:	Hendrik Leppkes <h.leppkes@gmail.com>
+Date:	Tue Jul 2 15:25:49 2019 +0200
+
+Tag as v1.6.3
+
+commit 40050b0cf74554a671a6555265d5f208458b07d3
+Author: Hendrik Leppkes <h.leppkes@gmail.com>
+Date:   Tue Jul 2 15:25:33 2019 +0200
+
+    Scale Taboo region drawing with the canvas scale
+
