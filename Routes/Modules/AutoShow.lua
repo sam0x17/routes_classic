@@ -11,24 +11,16 @@ local have_prof = {
 	Herbalism  = false,
 	Mining     = false,
 	Fishing    = false,
-	ExtractGas = false, -- Engineering
-	Archaeology= false,
 }
 local active_tracking = {}
 local profession_to_skill = {}
-profession_to_skill[GetSpellInfo(170691)] = "Herbalism"
+profession_to_skill[GetSpellInfo(2366)] = "Herbalism"
 profession_to_skill[GetSpellInfo(2575)] = "Mining"
-profession_to_skill[GetSpellInfo(7620) or GetSpellInfo(131476)] = "Fishing"
-profession_to_skill[GetSpellInfo(4036)] = "ExtractGas"
-if GetSpellInfo(78670) then
-	profession_to_skill[GetSpellInfo(78670)] = "Archaeology"
-end
+profession_to_skill[GetSpellInfo(7620)] = "Fishing"
 local tracking_spells = {}
 tracking_spells[(GetSpellInfo(2580))] = "Mining"
 tracking_spells[(GetSpellInfo(2383))] = "Herbalism"
-tracking_spells[(GetSpellInfo(43308))] = "Fishing"
 tracking_spells[(GetSpellInfo(2481))] = "Treasure"
-tracking_spells[(GetSpellInfo(167898))] = "Logging"
 
 function AutoShow:SKILL_LINES_CHANGED()
 	for k, v in pairs(have_prof) do
