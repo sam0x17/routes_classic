@@ -3001,8 +3001,9 @@ do
 		end
 		taboo_edit_list[taboo_data] = copy_of_taboo_data
 
-		-- open the WorldMapFlame on the right zone
-		OpenWorldMap(zone)
+		-- open the WorldMapFrame on the right zone
+		ShowUIPanel(WorldMapFrame)
+		WorldMapFrame:SetMapID(zone)
 
 		local fh, fw = Routes.DataProvider.tabooPin:GetHeight(), Routes.DataProvider.tabooPin:GetWidth()
 
