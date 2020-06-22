@@ -26,12 +26,35 @@ function AutoShow:SKILL_LINES_CHANGED()
 	for k, v in pairs(have_prof) do
 		have_prof[k] = false
 	end
-	for index, key in pairs({GetProfessions()}) do
-		local name, icon, rank, maxrank, numspells, spelloffset, skillline = GetProfessionInfo(key)
-		if profession_to_skill[name] then
-			have_prof[profession_to_skill[name]] = true
+
+	--thx https://www.wowinterface.com/forums/showpost.php?p=335018&postcount=5
+	local section, primary, secondary, weapons, other = 0, {}, {}, {}, {}
+	for i = 1, GetNumSkillLines() do
+		local skillName, isHeader, _, skillRank, _, _, skillMaxRank = GetSkillLineInfo(i)
+		if isHeader then
+			section = section + 1
+			if section == 2 then
+				primary.n = skillName
+			end
+		else
+			tinsert( section == 2 and primary or section == 3 and secondary or section == 4 and weapons or other,  {skillName} )
 		end
 	end
+	
+	for i = 1, #primary do
+		if profession_to_skill[unpack( primary[i])] then
+			have_prof[profession_to_skill[unpack( primary[i])]] = true
+		else
+			if(unpack( primary[i]) == "Herbalism") then
+				have_prof[profession_to_skill[GetSpellInfo(2366)]] = true
+			end
+		end
+	end
+	
+	for k, v in pairs(have_prof) do
+		--print(have_prof[k])
+	end
+	
 	self:ApplyVisibility()
 end
 
