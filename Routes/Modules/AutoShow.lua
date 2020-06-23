@@ -12,6 +12,30 @@ local have_prof = {
 	Mining     = false,
 	Fishing    = false,
 }
+function AutoShow:contains(tab, val)
+	for index, value in ipairs(tab) do
+		if value == val then
+			return true
+		end
+	end
+	
+	return false
+end
+
+local tableTrackingSpells = {
+	-- Druid
+	5225, 	-- Track Humanoids
+	-- Hunter
+	19885, 	-- Track Hidden
+	1494,	-- Track Beasts
+	19883,	-- Track Humanoids
+	19880,	-- Track Elementals
+	19882,	-- Track Giants
+	19878,	-- Track Demons
+	19884,	-- Track Undead
+	19879,	-- Track Dragonkin
+}
+
 local active_tracking = {}
 local profession_to_skill = {}
 profession_to_skill[GetSpellInfo(2366)] = "Herbalism"
@@ -26,24 +50,46 @@ function AutoShow:SKILL_LINES_CHANGED()
 	for k, v in pairs(have_prof) do
 		have_prof[k] = false
 	end
-	for index, key in pairs({GetProfessions()}) do
-		local name, icon, rank, maxrank, numspells, spelloffset, skillline = GetProfessionInfo(key)
-		if profession_to_skill[name] then
-			have_prof[profession_to_skill[name]] = true
+
+	--thx https://www.wowinterface.com/forums/showpost.php?p=335018&postcount=5
+	local section, primary, secondary, weapons, other = 0, {}, {}, {}, {}
+	for i = 1, GetNumSkillLines() do
+		local skillName, isHeader, _, skillRank, _, _, skillMaxRank = GetSkillLineInfo(i)
+		if isHeader then
+			section = section + 1
+			if section == 2 then
+				primary.n = skillName
+			end
+		else
+			tinsert( section == 2 and primary or section == 3 and secondary or section == 4 and weapons or other,  {skillName} )
 		end
 	end
+	
+	for i = 1, #primary do
+		if profession_to_skill[unpack( primary[i])] then
+			have_prof[profession_to_skill[unpack( primary[i])]] = true
+		else
+			if(unpack( primary[i]) == "Herbalism") then
+				have_prof[profession_to_skill[GetSpellInfo(2366)]] = true
+			end
+		end
+	end
+	
+	for k, v in pairs(have_prof) do
+		print(have_prof[k])
+	end
+	
 	self:ApplyVisibility()
 end
 
-function AutoShow:MINIMAP_UPDATE_TRACKING()
-	for i = 1, GetNumTrackingTypes() do
-		local name, texture, active, category  = GetTrackingInfo(i)
-		if tracking_spells[name] then
-			if active then
-				active_tracking[tracking_spells[name]] = true
-			else
-				active_tracking[tracking_spells[name]] = false
-			end
+function AutoShow:UNIT_SPELLCAST_SUCCEEDED(e, unit, _, spellID)
+	if unit ~= "player" then return end --for classic, this is always player, but I'll leave it anyway
+	if spellID == 2580 or spellID == 2383 or spellID == 2481 then
+		active_tracking[tracking_spells[GetSpellInfo(spellID)]] = true
+	else
+		-- Reset if any other "Tracking" Spell was casted
+		if self:contains(tableTrackingSpells, spellID) then
+			active_tracking = {}
 		end
 	end
 	self:ApplyVisibility()
@@ -86,8 +132,7 @@ end
 function AutoShow:SetupAutoShow()
 	if db.defaults.use_auto_showhide then
 		self:RegisterEvent("SKILL_LINES_CHANGED")
-		self:RegisterEvent("MINIMAP_UPDATE_TRACKING")
-		self:MINIMAP_UPDATE_TRACKING()
+		self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 		self:SKILL_LINES_CHANGED()
 	end
 end
@@ -161,13 +206,6 @@ options = {
 					values = prof_options,
 					arg = "Fishing",
 				},
-				gas = {
-					name = L["ExtractGas"], type = "select",
-					desc = L["Routes with Gas"],
-					order = 200,
-					values = prof_options3,
-					arg = "ExtractGas",
-				},
 				herbalism = {
 					name = L["Herbalism"], type = "select",
 					desc = L["Routes with Herbs"],
@@ -188,27 +226,6 @@ options = {
 					order = 500,
 					values = prof_options2,
 					arg = "Treasure",
-				},
-				archaeology = {
-					name = L["Archaeology"], type = "select",
-					desc = L["Routes with Archaeology"],
-					order = 600,
-					values = prof_options3,
-					arg = "Archaeology",
-				},
-				note = {
-					name = L["Note"], type = "select",
-					desc = L["Routes with Notes"],
-					order = 700,
-					values = prof_options4,
-					arg = "Note",
-				},
-				logging = {
-					name = L["Logging"], type = "select",
-					desc = L["Routes with Timber"],
-					order = 800,
-					values = prof_options2,
-					arg = "Logging",
 				},
 			},
 		},
