@@ -193,7 +193,7 @@ local function processMapChildrenRecursive(parent)
 	end
 end
 
-local WORLD_MAP_ID = 947
+local WORLD_MAP_ID = 946
 processMapChildrenRecursive(WORLD_MAP_ID)
 
 ------------------------------------------------------------------------------------------------------
